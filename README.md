@@ -1,73 +1,125 @@
-# React + TypeScript + Vite
+# Teddy Web - App de Gestão de Clientes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 📝 Sobre o Projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+O **Teddy Web** é uma aplicação React (Vite + TypeScript) para gerenciar clientes. O usuário informa seu nome na tela inicial e navega para a lista de clientes, onde é possível cadastrar, editar, selecionar e excluir clientes, além de visualizar os clientes selecionados em uma outra tela.
 
-## React Compiler
+Este projeto foi desenvolvido contemplando os seguintes requisitos:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologias obrigatórias
+• React + Vite (última versão)
+• TypeScript
+• Aplicação responsiva (mobile-first)
+• Docker (para containerizar o front)
+• Deploy na Vercel
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📱 Funcionalidades Principais
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Tela inicial com input para o usuário informar seu nome (com validações).
+- Lista de clientes com **paginação** e controle de tamanho de página.
+- **Cadastro** de clientes via modal com validações.
+- **Edição** de clientes via modal.
+- **Exclusão** de clientes com modal de confirmação.
+- Visualização dos **clientes selecionados** em página dedicada.
+- Navegação fluida entre telas com **React Router**.
+- Componentes reutilizáveis.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠 Tecnologias e Ferramentas
+
+- **React** + **Vite**
+- **TypeScript**
+- **React Router**
+- **LocalStorage** para persistência de dados.
+- **Tailwind CSS** v4
+- **Axios**
+- **ESLint**
+- **Prettier** para formatação de código.
+- **Git** para controle de versão
+
+
+---
+
+## 🏗️ Estrutura do Projeto
+
+```plaintext
+/src
+  App.tsx
+  Routes.tsx
+  index.css
+  main.tsx
+  /api
+    api.ts              # Configuração do Axios (baseURL, headers)
+  /assets
+    /img                # Imagens usadas na UI
+  /components
+    /Header
+    /ClientCard
+    /Pagination
+    /SelectedClientCard
+    /modals             # Modais de criação e exclusão
+  /context
+    SelectedClientsContext.tsx  # Contexto de seleção de clientes
+  /pages
+    /Home
+    /Login
+    /SelectedClients
+  /types
+    client.ts
+  /utils
+    currency.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Como Rodar o Projeto
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Pré-requisitos
+
+- Node.js (>= 18)
+- npm (ou outro gerenciador de preferência)
+
+### Instalação
+
+```bash
+git clone https://github.com/Michel-O-Cordeiro/teste-teddy.git
+cd teste-teddy
+npm install
 ```
+
+### Ambiente de desenvolvimento
+
+```bash
+npm run dev
+```
+
+### Build de produção
+
+```bash
+npm run build
+```
+
+### Preview do build
+
+```bash
+npm run preview
+```
+
+---
+
+## ⚙️ Decisões Técnicas
+
+- **Componentização:** Cada componente/tela possui responsabilidade única (ex.: `ClientCard`, `Pagination`, `Header`, modais).
+- **Estado:** `useState` e `useEffect` para lógica local; **Context API** (`SelectedClientsContext`) para seleção de clientes global com `useMemo`.
+- **Estilos:** **Tailwind CSS v4** via `@import "tailwindcss"` em `index.css`, fonte Inter com pesos **400** e **700** para tipografia consistente.
+- **Navegação:** **react-router-dom** com rotas para `Login`, `Home` e `SelectedClients`.
+- **UX:** Feedbacks visuais de sucesso/erro; modais para criar/editar/deletar; paginação e controle de página.
+- **Qualidade:** **ESLint** com regras recomendadas para JS/TS e React.
+
+---
+
