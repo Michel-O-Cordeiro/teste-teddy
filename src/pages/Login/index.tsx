@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom"
 export default function Login() {
     const navigate = useNavigate()
     const [name, setName] = useState("")
-    const canEnter = name.trim().length >= 3
+    const [error, setError] = useState("")
+
     return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="max-w-[1280px] w-full mx-auto text-center py-8 px-4 sm:px-8">
@@ -12,19 +13,34 @@ export default function Login() {
                 <div className="flex items-center flex-col w-full">
                     <input
                         type="text"
-                        className="w-full max-w-sm h-[60px] p-2 border border-gray-300 rounded-md"
+                        className="max-w-full w-[521px] h-[60px] p-2 border border-gray-300 rounded-md"
                         placeholder="Digite seu nome:"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => {
+                            setName(e.target.value)
+                            if (error) setError("")
+                        }}
                     />
+                    {error && (
+                        <p className="text-red-600 text-sm mt-2" role="alert">
+                            {error}
+                        </p>
+                    )}
                     <button
-                        className="w-full max-w-sm mt-4 !bg-[#ec6724] text-white p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full max-w-[521px] h-[60px] mt-4 !bg-[#ec6724] text-white p-2 rounded-md"
                         onClick={() => {
-                            if (!canEnter) return
-                            localStorage.setItem("username", name.trim())
+                            const trimmed = name.trim()
+                            if (!trimmed) {
+                                setError("Por favor, digite seu nome.")
+                                return
+                            }
+                            if (!/\p{L}/u.test(trimmed)) {
+                                setError("O nome deve conter letras.")
+                                return
+                            }
+                            localStorage.setItem("username", trimmed)
                             navigate('/home')
                         }}
-                        disabled={!canEnter}
                     >
                         Entrar
                     </button>
