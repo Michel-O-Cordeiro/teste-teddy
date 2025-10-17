@@ -37,27 +37,6 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 15px 220px;
-  font-size: 24px;
-  line-height: 100%;
-  font-weight: 700;
-  font-family: "Inter", ui-sans-serif, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: transparent;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #ffffff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -71,5 +50,17 @@ button:focus-visible {
 
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@keyframes sidebar-slide-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.9;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

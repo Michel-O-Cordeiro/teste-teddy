@@ -76,10 +76,13 @@ export default function Header() {
 
             {isOpen && (
                 <div className="fixed inset-0 z-40">
-                    <div className="absolute inset-0 bg-black/30" onClick={() => setIsOpen(false)} />
-                    <aside className="absolute top-0 left-0 h-full w-72 bg-[#2B2B2B] shadow-xl z-50">
-                        <div className="relative h-30 bg-[#2B2B2B] rounded-tr-xl flex items-center justify-center px-4">
-                            <div className="w-28 h-16 bg-[#ffffff] rounded-md flex items-center justify-center text-[#ec6724] font-bold">
+                    <div
+                        className="absolute inset-y-0 left-72 right-0 bg-black/30"
+                        onClick={() => setIsOpen(false)}
+                    />
+                    <aside className="absolute top-0 left-0 h-full w-72 bg-white/10 backdrop-blur-md shadow-xl z-50 border-r border-white/20 animate-[sidebar-slide-in_300ms_ease]">
+                        <div className="relative h-30 bg-black/30 flex items-center justify-center px-4">
+                            <div className="w-28 h-16 bg-transparent rounded-md flex items-center justify-center">
                                 <img src={logo} alt="Logo" className="select-none" />
                             </div>
                         </div>
@@ -93,7 +96,7 @@ export default function Header() {
                             <img src={arrow} alt="Fechar menu" className="select-none" />
                         </div>
 
-                        <div className="relative h-[calc(100%-96px)] bg-white p-4">
+                        <div className="relative h-[calc(100%-96px)] bg-white/5 p-4">
                             <span className="absolute right-0 top-0 h-full w-[2px] bg-[#ec6724]" />
                             <nav className="flex flex-col gap-4">
                                 <NavLink
