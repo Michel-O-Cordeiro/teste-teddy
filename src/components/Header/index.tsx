@@ -21,7 +21,7 @@ export default function Header() {
         <>
             <header className="fixed top-0 left-0 right-0 w-full h-20 flex justify-center items-center bg-white shadow-[0px_2px_2px_0px_#0000001A]">
                 <div className="w-full max-w-[1280px] flex justify-between items-center px-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 cursor-pointer">
                         <span
                             aria-label="Abrir menu"
                             className="me-5"
@@ -96,7 +96,7 @@ export default function Header() {
 
                         <div
                             aria-label="Fechar menu"
-                            className="absolute -right-4 top-30 -translate-y-1/2 w-10 h-10 rounded-full bg-black text-white shadow flex items-center justify-center z-10"
+                            className="absolute cursor-pointer -right-4 top-30 -translate-y-1/2 w-10 h-10 rounded-full bg-black text-white shadow flex items-center justify-center z-10"
                             role="button"
                             onClick={() => setIsOpen(false)}
                         >

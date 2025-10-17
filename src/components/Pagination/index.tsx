@@ -24,7 +24,7 @@ export default function Pagination({ totalPages, currentPage, onChange, classNam
     const items = buildPagination(totalPages, currentPage)
 
     return (
-        <div className={className ?? "mt-6 flex flex-wrap items-center justify-center gap-1 sm:gap-2"}>
+        <div className={className ?? "mt-6 flex flex-wrap items-center justify-center gap-1 sm:gap-2 "}>
             {items.map((item, idx) =>
                 typeof item === "number" ? (
                     <button
@@ -32,8 +32,8 @@ export default function Pagination({ totalPages, currentPage, onChange, classNam
                         onClick={() => onChange(item)}
                         className={
                             item === currentPage
-                                ? "px-3 py-1 rounded !bg-[#ec6724] text-white font-semibold"
-                                : "px-3 py-1 bg-white text-black hover:bg-gray-100"
+                                ? "px-3 py-1 rounded !bg-[#ec6724] text-white font-semibold cursor-pointer"
+                                : "px-3 py-1 bg-white text-black hover:bg-gray-100 cursor-pointer"
                         }
                     >
                         {item}

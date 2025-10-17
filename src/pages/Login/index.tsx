@@ -27,7 +27,7 @@ export default function Login() {
                         </p>
                     )}
                     <button
-                        className="w-full max-w-[521px] h-[60px] mt-4 !bg-[#ec6724] text-white p-2 rounded-md"
+                        className="w-full max-w-[521px] h-[60px] mt-4 !bg-[#ec6724] text-white p-2 rounded-md cursor-pointer"
                         onClick={() => {
                             const trimmed = name.trim()
                             if (!trimmed) {
