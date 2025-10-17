@@ -9,11 +9,11 @@ O **Teddy Web** é uma aplicação React (Vite + TypeScript) para gerenciar clie
 Este projeto foi desenvolvido contemplando os seguintes requisitos:
 
 ## Tecnologias obrigatórias
-• React + Vite (última versão)
-• TypeScript
-• Aplicação responsiva (mobile-first)
-• Docker (para containerizar o front)
-• Deploy na Vercel
+- React + Vite (última versão)
+- TypeScript
+- Aplicação responsiva (mobile-first)
+- Docker (para containerizar o front)
+- Deploy na Vercel
 
 ---
 
