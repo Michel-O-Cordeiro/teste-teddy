@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, useEffect, type ReactNode } from "react";
 import type { Client } from "../types/client";
 
 type SelectedClientsContextValue = {
@@ -12,28 +12,40 @@ type SelectedClientsContextValue = {
 const SelectedClientsContext = createContext<SelectedClientsContextValue | undefined>(undefined);
 
 export function SelectedClientsProvider({ children }: { children: ReactNode }) {
-    const [selectedClients, setSelectedClients] = useState<Client[]>([]);
+    const [selectedClients, setSelectedClients] = useState<Client[]>(() => {
+        const stored = localStorage.getItem("selectedClients")
+        if (stored) {
+            try {
+                return JSON.parse(stored)
+            } catch { }
+        }
+        return []
+    })
+
+    useEffect(() => {
+        localStorage.setItem("selectedClients", JSON.stringify(selectedClients))
+    }, [selectedClients])
 
     const addClient = (client: Client) => {
-        setSelectedClients((prev) => (prev.some((c) => c.id === client.id) ? prev : [...prev, client]));
-    };
+        setSelectedClients((prev) => (prev.some((c) => c.id === client.id) ? prev : [...prev, client]))
+    }
 
     const removeClient = (clientId: number) => {
-        setSelectedClients((prev) => prev.filter((c) => c.id !== clientId));
-    };
+        setSelectedClients((prev) => prev.filter((c) => c.id !== clientId))
+    }
 
-    const isSelected = (clientId: number) => selectedClients.some((c) => c.id === clientId);
+    const isSelected = (clientId: number) => selectedClients.some((c) => c.id === clientId)
 
     const clearAll = () => {
-        setSelectedClients([]);
-    };
+        setSelectedClients([])
+    }
 
     const value = useMemo(
         () => ({ selectedClients, addClient, removeClient, isSelected, clearAll }),
         [selectedClients]
-    );
+    )
 
-    return <SelectedClientsContext.Provider value={value}>{children}</SelectedClientsContext.Provider>;
+    return <SelectedClientsContext.Provider value={value}>{children}</SelectedClientsContext.Provider>
 }
 
 export function useSelectedClients() {
