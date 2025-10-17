@@ -6,6 +6,7 @@ import ClientCard from "../../components/ClientCard"
 import Pagination from "../../components/Pagination"
 import ModalClientAdd from "../../components/modals/modalClientAdd"
 import ModalClientDelete from "../../components/modals/modalClientDelete"
+import { useSelectedClients } from "../../context/SelectedClientsContext"
 
 
 export default function Home() {
@@ -32,6 +33,11 @@ export default function Home() {
     const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
 
     const [selectedClientToEdit, setSelectedClientToEdit] = useState<Client | null>(null)
+
+    const { addClient, isSelected } = useSelectedClients()
+
+
+    const visibleClients: Client[] = clients.filter((c) => !isSelected(c.id))
 
     const handleCreateClient = async () => {
         setCreateSuccess(null)
@@ -262,7 +268,7 @@ export default function Home() {
                 <div className="max-w-[1280px] w-full mx-auto px-4">
                     <div className="flex justify-between items-center">
                         <h2 className="text-xl  mb-4">
-                            <b className="text-black">{Math.min(clients.length, pageSize)}</b> clientes encontrados:
+                            <b className="text-black">{Math.min(visibleClients.length, pageSize)}</b> clientes encontrados:
                         </h2>
                         <div className="mb-4 flex items-center gap-2">
                             <label htmlFor="page-size" className="text-black">Clientes por página:</label>
@@ -289,7 +295,7 @@ export default function Home() {
                     ) : (
                         <>
                             <div className="grid grid-cols-4 gap-4">
-                                {clients.map((client) => (
+                                {visibleClients.map((client: Client) => (
                                     <ClientCard
                                         key={client.id}
                                         client={client}
@@ -306,6 +312,9 @@ export default function Home() {
                                             setCreateError(null)
                                             setCreateSuccess(null)
                                             setShowCreateModal(true)
+                                        }}
+                                        onAddClick={(c) => {
+                                            addClient(c)
                                         }}
                                     />
                                 ))}
@@ -384,3 +393,5 @@ export default function Home() {
         </>
     )
 }
+
+

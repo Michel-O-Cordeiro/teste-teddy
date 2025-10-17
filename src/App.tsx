@@ -1,5 +1,10 @@
 import AppRoutes from "./Routes"
+import { SelectedClientsProvider } from "./context/SelectedClientsContext"
 
 export default function App() {
-  return <AppRoutes />
+  return (
+    <SelectedClientsProvider>
+      <AppRoutes />
+    </SelectedClientsProvider>
+  )
 }
