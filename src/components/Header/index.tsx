@@ -39,7 +39,7 @@ export default function Header() {
 
 
 
-                    <nav className="flex gap-5">
+                    <nav className="hidden md:flex gap-3 lg:gap-5">
                         <NavLink
                             to="/home"
                             end
@@ -70,7 +70,7 @@ export default function Header() {
                         </Link>
                     </nav>
 
-                    <span className="text-black ">Olá{username ? `, ${username}!` : ""}</span>
+                    <span className="hidden sm:inline text-black">Olá{username ? `, ${username}!` : ""}</span>
                 </div>
             </header>
 
@@ -98,7 +98,7 @@ export default function Header() {
 
                         <div className="relative h-[calc(100%-96px)] bg-white/5 p-4">
                             <span className="absolute right-0 top-0 h-full w-[2px] bg-[#ec6724]" />
-                            <nav className="flex flex-col gap-4">
+                            <nav className="flex flex-col h-full gap-4">
                                 <NavLink
                                     to="/home"
                                     end
@@ -130,6 +130,18 @@ export default function Header() {
                                         </>
                                     )}
                                 </NavLink>
+
+                                <Link
+                                    to="/login"
+                                    className="mt-auto flex items-center gap-2 px-2 pb-5 py-1 rounded text-black no-underline hover:no-underline"
+                                    onClick={() => {
+                                        localStorage.removeItem("username")
+                                        setUsername("")
+                                        setIsOpen(false)
+                                    }}
+                                >
+                                    <span>Sair</span>
+                                </Link>
                             </nav>
                         </div>
                     </aside>

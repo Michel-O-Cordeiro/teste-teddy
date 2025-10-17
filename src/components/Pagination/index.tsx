@@ -24,7 +24,7 @@ export default function Pagination({ totalPages, currentPage, onChange, classNam
     const items = buildPagination(totalPages, currentPage)
 
     return (
-        <div className={className ?? "mt-6 flex items-center justify-center gap-2"}>
+        <div className={className ?? "mt-6 flex flex-wrap items-center justify-center gap-1 sm:gap-2"}>
             {items.map((item, idx) =>
                 typeof item === "number" ? (
                     <button

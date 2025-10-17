@@ -9,16 +9,16 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center">
             <div className="max-w-[1280px] w-full mx-auto text-center py-8 px-4 sm:px-8">
                 <p className="text-2xl font-bold mb-4">Olá, seja bem-vindo!</p>
-                <div className="flex items-center flex-col">
+                <div className="flex items-center flex-col w-full">
                     <input
                         type="text"
-                        className=" w-lg h-[60px] p-2 border border-gray-300 rounded-md"
+                        className="w-full max-w-sm h-[60px] p-2 border border-gray-300 rounded-md"
                         placeholder="Digite seu nome:"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
                     <button
-                        className="w-lg mt-4 !bg-[#ec6724] text-white p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full max-w-sm mt-4 !bg-[#ec6724] text-white p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => {
                             if (!canEnter) return
                             localStorage.setItem("username", name.trim())

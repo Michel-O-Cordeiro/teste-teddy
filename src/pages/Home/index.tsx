@@ -266,11 +266,11 @@ export default function Home() {
             )}
             <main className="min-h-screen bg-[#F5F5F5] pt-24 pb-10">
                 <div className="max-w-[1280px] w-full mx-auto px-4">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl  mb-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <h2 className="text-xl">
                             <b className="text-black">{Math.min(visibleClients.length, pageSize)}</b> clientes encontrados:
                         </h2>
-                        <div className="mb-4 flex items-center gap-2">
+                        <div className="flex items-center gap-2">
                             <label htmlFor="page-size" className="text-black">Clientes por página:</label>
                             <select
                                 id="page-size"
@@ -291,10 +291,10 @@ export default function Home() {
                     {error && <div className="text-red-600 mb-4">{error}</div>}
 
                     {loading ? (
-                        <div className="flex items-center justify-center h-40 text.black">Carregando...</div>
+                        <div className="flex items-center justify-center h-40 text-black">Carregando...</div>
                     ) : (
                         <>
-                            <div className="grid grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {visibleClients.map((client: Client) => (
                                     <ClientCard
                                         key={client.id}
