@@ -10,16 +10,16 @@ export default function SelectedClients() {
             <Header />
             <main className="min-h-screen bg-[#F5F5F5] pt-24 pb-10">
                 <div className="max-w-[1280px] w-full mx-auto px-4">
-                    <h2 className="text-xl mb-4">
+                    <strong className="text-2xl font-bold">
                         Clientes selecionados:
-                    </h2>
+                    </strong>
 
                     {selectedClients.length === 0 ? (
                         <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center">
                             <p className="text-black">Nenhum cliente selecionado</p>
                         </div>
                     ) : (
-                        <div>
+                        <div className="mt-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {selectedClients.map((client) => (
                                     <SelectedClientCard

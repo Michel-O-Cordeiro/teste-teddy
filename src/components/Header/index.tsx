@@ -70,7 +70,14 @@ export default function Header() {
                         </Link>
                     </nav>
 
-                    <span className="hidden sm:inline text-black">Olá{username ? `, ${username}!` : ""}</span>
+                    <span className="hidden sm:inline text-black">
+                        Olá
+                        {username ? (
+                            <>
+                                , <strong className="font-bold">{username}</strong>!
+                            </>
+                        ) : null}
+                    </span>
                 </div>
             </header>
 
