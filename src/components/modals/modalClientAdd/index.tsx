@@ -1,4 +1,5 @@
-import type { FC } from "react"
+import { useEffect, useState, type FC } from "react"
+import { formatCurrencyBRL } from "../../../utils/currency"
 
 type FormErrors = { name?: string; salary?: string; companyValuation?: string }
 
@@ -46,6 +47,17 @@ const ModalClientAdd: FC<ModalClientAddProps> = ({
         onClose()
     }
 
+    const [salaryText, setSalaryText] = useState(salary === "" ? "" : formatCurrencyBRL(Number(salary)))
+    const [companyValuationText, setCompanyValuationText] = useState(companyValuation === "" ? "" : formatCurrencyBRL(Number(companyValuation)))
+
+    useEffect(() => {
+        setSalaryText(salary === "" ? "" : formatCurrencyBRL(Number(salary)))
+    }, [salary])
+
+    useEffect(() => {
+        setCompanyValuationText(companyValuation === "" ? "" : formatCurrencyBRL(Number(companyValuation)))
+    }, [companyValuation])
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
@@ -75,14 +87,22 @@ const ModalClientAdd: FC<ModalClientAddProps> = ({
 
                     <div>
                         <input
-                            type="number"
+                            type="text"
                             placeholder="Digite o salário:"
                             className="w-full rounded bg-white text-black border border-gray-300 px-3 py-2"
-                            value={salary === "" ? "" : salary}
-                            min={1}
+                            value={salaryText}
+                            inputMode="numeric"
                             onChange={(e) => {
-                                const val = e.target.value
-                                onChangeSalary(val === "" ? "" : Number(val))
+                                const raw = e.target.value
+                                const digits = raw.replace(/\D/g, "")
+                                if (digits === "") {
+                                    setSalaryText("")
+                                    onChangeSalary("")
+                                    return
+                                }
+                                const numeric = Number(digits) / 100
+                                setSalaryText(formatCurrencyBRL(numeric))
+                                onChangeSalary(numeric)
                             }}
                         />
                         {formErrors.salary && <p className="mt-1 text-sm text-red-600">{formErrors.salary}</p>}
@@ -90,14 +110,22 @@ const ModalClientAdd: FC<ModalClientAddProps> = ({
 
                     <div>
                         <input
-                            type="number"
+                            type="text"
                             placeholder="Digite o valor da empresa"
                             className="w-full rounded bg-white text-black border border-gray-300 px-3 py-2"
-                            value={companyValuation === "" ? "" : companyValuation}
-                            min={1}
+                            value={companyValuationText}
+                            inputMode="numeric"
                             onChange={(e) => {
-                                const val = e.target.value
-                                onChangeCompanyValuation(val === "" ? "" : Number(val))
+                                const raw = e.target.value
+                                const digits = raw.replace(/\D/g, "")
+                                if (digits === "") {
+                                    setCompanyValuationText("")
+                                    onChangeCompanyValuation("")
+                                    return
+                                }
+                                const numeric = Number(digits) / 100
+                                setCompanyValuationText(formatCurrencyBRL(numeric))
+                                onChangeCompanyValuation(numeric)
                             }}
                         />
                         {formErrors.companyValuation && <p className="mt-1 text-sm text-red-600">{formErrors.companyValuation}</p>}
