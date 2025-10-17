@@ -35,13 +35,15 @@ Este projeto foi desenvolvido contemplando os seguintes requisitos:
 - **React** + **Vite**
 - **TypeScript**
 - **React Router**
-- **LocalStorage** para persistência de dados.
+- **LocalStorage** para persistência de dados (username e clientes selecionados)
 - **Tailwind CSS** v4
 - **Axios**
+- **TanStack Query (React Query)** para cache e gerenciamento de requisições
+- **Vitest** + **Testing Library** para testes
 - **ESLint**
-- **Prettier** para formatação de código.
+- **Docker** + **Nginx** (produção)
+- **Vercel** (deploy)
 - **Git** para controle de versão
-
 
 ---
 
@@ -112,14 +114,40 @@ npm run preview
 
 ---
 
+## 🧪 Testes e Lint
+
+Executar testes (Vitest):
+
+```bash
+npm test
+```
+
+Testes em modo run único:
+
+```bash
+npm run test -- --run
+```
+
+Lint:
+
+```bash
+npm run lint
+```
+
+Setup de testes: `src/test/setup.ts` com `@testing-library/jest-dom/vitest`. Teste de Login cobre navegação, validações e persistência.
+
+---
+
 ## ⚙️ Decisões Técnicas
 
 - **Componentização:** Cada componente/tela possui responsabilidade única (ex.: `ClientCard`, `Pagination`, `Header`, modais).
-- **Estado:** `useState` e `useEffect` para lógica local; **Context API** (`SelectedClientsContext`) para seleção de clientes global com `useMemo`.
+- **Estado:** `useState` e `useEffect` para lógica local; 
+- **Context API** (`SelectedClientsContext`) para seleção de clientes global com `useMemo`.
 - **Estilos:** **Tailwind CSS v4** via `@import "tailwindcss"` em `index.css`, fonte Inter com pesos **400** e **700** para tipografia consistente.
 - **Navegação:** **react-router-dom** com rotas para `Login`, `Home` e `SelectedClients`.
 - **UX:** Feedbacks visuais de sucesso/erro; modais para criar/editar/deletar; paginação e controle de página.
 - **Qualidade:** **ESLint** com regras recomendadas para JS/TS e React.
+- **Requisições e cache:** **TanStack Query** para queries/mutações e invalidations de `["users"]`
 
 ---
 
