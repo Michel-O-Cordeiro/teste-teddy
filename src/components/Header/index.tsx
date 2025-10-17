@@ -7,10 +7,12 @@ import client from "../../assets/img/client.png"
 import clientSelected from "../../assets/img/clientSelect.png"
 import client1 from "../../assets/img/client1.png"
 import clientSelected1 from "../../assets/img/clientSelect1.png"
+import { useSelectedClients } from "../../context/SelectedClientsContext"
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false)
     const [username, setUsername] = useState("")
+    const { clearAll } = useSelectedClients()
 
     useEffect(() => {
         const stored = localStorage.getItem("username")
@@ -62,7 +64,8 @@ export default function Header() {
                             to="/login"
                             className="!text-black hover:!text-black visited:!text-black active:!text-black focus:!text-black no-underline hover:no-underline px-[15px] py-[2px] rounded-[5px] no-decoration"
                             onClick={() => {
-                                localStorage.removeItem("username")
+                                clearAll()
+                                localStorage.clear()
                                 setUsername("")
                             }}
                         >
@@ -142,7 +145,8 @@ export default function Header() {
                                     to="/login"
                                     className="mt-auto flex items-center gap-2 px-2 pb-5 py-1 rounded text-black no-underline hover:no-underline"
                                     onClick={() => {
-                                        localStorage.removeItem("username")
+                                        clearAll()
+                                        localStorage.clear()
                                         setUsername("")
                                         setIsOpen(false)
                                     }}

@@ -1,10 +1,18 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { useSelectedClients } from "../../context/SelectedClientsContext"
 
 export default function Login() {
     const navigate = useNavigate()
     const [name, setName] = useState("")
     const [error, setError] = useState("")
+
+    const { clearAll } = useSelectedClients()
+
+    useEffect(() => {
+        clearAll()
+        localStorage.clear()
+    }, [])
 
     return (
         <div className="min-h-screen flex items-center justify-center">

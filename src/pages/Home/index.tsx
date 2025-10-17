@@ -7,7 +7,8 @@ import Pagination from "../../components/Pagination"
 import ModalClientAdd from "../../components/modals/modalClientAdd"
 import ModalClientDelete from "../../components/modals/modalClientDelete"
 import { useSelectedClients } from "../../context/SelectedClientsContext"
-
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import type { AxiosResponse } from "axios"
 
 export default function Home() {
     const [clients, setClients] = useState<Client[]>([])
@@ -36,8 +37,65 @@ export default function Home() {
 
     const { addClient, isSelected } = useSelectedClients()
 
-
     const visibleClients: Client[] = clients.filter((c) => !isSelected(c.id))
+
+    const queryClient = useQueryClient()
+
+    const createMutation = useMutation<AxiosResponse, unknown, { name: string; salary: number; companyValuation: number }>({
+        mutationFn: async (payload) => {
+            const res = await api.post("/users", payload)
+            return res
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] })
+        }
+    })
+
+    const updateMutation = useMutation<AxiosResponse, unknown, { id: number; name: string; salary: number; companyValuation: number }>({
+        mutationFn: async (payload) => {
+            const res = await api.patch(`/users/${payload.id}`, {
+                name: payload.name,
+                salary: payload.salary,
+                companyValuation: payload.companyValuation
+            })
+            return res
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] })
+        }
+    })
+
+    const deleteMutation = useMutation<AxiosResponse, unknown, number>({
+        mutationFn: async (id) => {
+            const res = await api.delete(`/users/${id}`)
+            return res
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] })
+        }
+    })
+
+    const clientsQuery = useQuery<ApiResponse>({
+        queryKey: ["users", currentPage, pageSize],
+        queryFn: async () => {
+            const res = await api.get<ApiResponse>("/users", {
+                params: { page: currentPage, limit: pageSize, perPage: pageSize, pageSize: pageSize }
+            })
+            return res.data ?? { clients: [], totalPages: 1, currentPage: 1 }
+        },
+        placeholderData: (prev) => prev
+    })
+
+    useEffect(() => {
+        setLoading(clientsQuery.isFetching)
+        setError(clientsQuery.isError ? "Falha ao carregar clientes." : null)
+        const data = clientsQuery.data
+        if (data) {
+            setClients(Array.isArray(data.clients) ? data.clients.slice(0, pageSize) : [])
+            setTotalPages(Number(data.totalPages) || 1)
+            setCurrentPage(Number(data.currentPage) || currentPage)
+        }
+    }, [clientsQuery.data, clientsQuery.isFetching, clientsQuery.isError, pageSize])
 
     const handleCreateClient = async () => {
         setCreateSuccess(null)
@@ -71,7 +129,7 @@ export default function Home() {
 
         setCreateLoading(true)
         try {
-            const res = await api.post("/users", {
+            const res = await createMutation.mutateAsync({
                 name: trimmedName,
                 salary: Number(salary),
                 companyValuation: Number(companyValuation)
@@ -98,41 +156,6 @@ export default function Home() {
             setCreateLoading(false)
         }
     }
-
-    useEffect(() => {
-        let mounted = true
-        const fetchClients = async () => {
-            setLoading(true)
-            setError(null)
-            try {
-                const res = await api.get<ApiResponse>("/users", {
-                    params: { page: currentPage, limit: pageSize, perPage: pageSize, pageSize: pageSize }
-                })
-                const data = res.data ?? { clients: [], totalPages: 1, currentPage: 1 }
-                if (!mounted) return
-                setClients(Array.isArray(data.clients) ? data.clients.slice(0, pageSize) : [])
-                setTotalPages(Number(data.totalPages) || 1)
-                setCurrentPage(Number(data.currentPage) || currentPage)
-            } catch {
-                if (!mounted) return
-                setError("Falha ao carregar clientes.")
-            } finally {
-                if (mounted) setLoading(false)
-            }
-        }
-        fetchClients()
-        return () => {
-            mounted = false
-        }
-    }, [currentPage, pageSize])
-
-    useEffect(() => {
-        return () => {
-            if (alertTimeoutRef.current) {
-                window.clearTimeout(alertTimeoutRef.current)
-            }
-        }
-    }, [])
 
     const handleUpdateClient = async () => {
         if (!selectedClientToEdit) return
@@ -167,7 +190,8 @@ export default function Home() {
 
         setCreateLoading(true)
         try {
-            const res = await api.patch(`/users/${selectedClientToEdit.id}`, {
+            const res = await updateMutation.mutateAsync({
+                id: selectedClientToEdit.id,
                 name: trimmedName,
                 salary: Number(salary),
                 companyValuation: Number(companyValuation)
@@ -203,12 +227,11 @@ export default function Home() {
         }
     }
 
-
     const handleDeleteClient = async () => {
         if (!selectedClientToDelete) return
         setDeleteLoading(true)
         try {
-            const res = await api.delete(`/users/${selectedClientToDelete.id}`)
+            const res = await deleteMutation.mutateAsync(selectedClientToDelete.id)
             if (res.status >= 200 && res.status < 300) {
                 setClients((prev) => prev.filter((c) => c.id !== selectedClientToDelete.id))
                 setShowDeleteModal(false)
@@ -228,33 +251,6 @@ export default function Home() {
             setDeleteLoading(false)
         }
     }
-
-    useEffect(() => {
-        let mounted = true
-        const fetchClients = async () => {
-            setLoading(true)
-            setError(null)
-            try {
-                const res = await api.get<ApiResponse>("/users", {
-                    params: { page: currentPage, limit: pageSize, perPage: pageSize, pageSize: pageSize }
-                })
-                const data = res.data ?? { clients: [], totalPages: 1, currentPage: 1 }
-                if (!mounted) return
-                setClients(Array.isArray(data.clients) ? data.clients.slice(0, pageSize) : [])
-                setTotalPages(Number(data.totalPages) || 1)
-                setCurrentPage(Number(data.currentPage) || currentPage)
-            } catch {
-                if (!mounted) return
-                setError("Falha ao carregar clientes.")
-            } finally {
-                if (mounted) setLoading(false)
-            }
-        }
-        fetchClients()
-        return () => {
-            mounted = false
-        }
-    }, [currentPage, pageSize])
 
     return (
         <>
@@ -393,5 +389,3 @@ export default function Home() {
         </>
     )
 }
-
-
