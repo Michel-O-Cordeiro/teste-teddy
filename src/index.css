@@ -47,10 +47,6 @@ h1 {
   a:hover {
     color: #000000;
   }
-
-  button {
-    background-color: #f9f9f9;
-  }
 }
 
 @keyframes sidebar-slide-in {

@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Header from "../../components/Header"
 import { api } from "../../api/api"
 import type { Client, ApiResponse } from "../../types/client"
 import ClientCard from "../../components/ClientCard"
 import Pagination from "../../components/Pagination"
+import ModalClientAdd from "../../components/modals/modalClientAdd"
+import ModalClientDelete from "../../components/modals/modalClientDelete"
 
 
 export default function Home() {
@@ -12,8 +14,214 @@ export default function Home() {
     const [currentPage, setCurrentPage] = useState<number>(1)
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
-
     const [pageSize, setPageSize] = useState<number>(16)
+
+    const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
+    const [name, setName] = useState<string>("")
+    const [salary, setSalary] = useState<number | "">("")
+    const [companyValuation, setCompanyValuation] = useState<number | "">("")
+    const [createLoading, setCreateLoading] = useState<boolean>(false)
+    const [createError, setCreateError] = useState<string | null>(null)
+    const [createSuccess, setCreateSuccess] = useState<string | null>(null)
+    const [formErrors, setFormErrors] = useState<{ name?: string; salary?: string; companyValuation?: string }>({})
+    const [alertMessage, setAlertMessage] = useState<string | null>(null)
+    const alertTimeoutRef = useRef<number | null>(null)
+
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+    const [selectedClientToDelete, setSelectedClientToDelete] = useState<Client | null>(null)
+    const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
+
+    const [selectedClientToEdit, setSelectedClientToEdit] = useState<Client | null>(null)
+
+    const handleCreateClient = async () => {
+        setCreateSuccess(null)
+        setCreateError(null)
+
+        const nextErrors: { name?: string; salary?: string; companyValuation?: string } = {}
+
+        const trimmedName = name.trim()
+        if (!trimmedName) {
+            nextErrors.name = "Nome é obrigatório."
+        } else if (trimmedName.length <= 3) {
+            nextErrors.name = "Nome deve ter mais de 3 letras."
+        } else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(trimmedName)) {
+            nextErrors.name = "Nome deve conter apenas letras."
+        }
+
+        if (salary === "" || isNaN(Number(salary))) {
+            nextErrors.salary = "Salário é obrigatório."
+        } else if (Number(salary) <= 0) {
+            nextErrors.salary = "Salário deve ser maior que 0."
+        }
+
+        if (companyValuation === "" || isNaN(Number(companyValuation))) {
+            nextErrors.companyValuation = "Valor da empresa é obrigatório."
+        } else if (Number(companyValuation) <= 0) {
+            nextErrors.companyValuation = "Valor da empresa deve ser maior que 0."
+        }
+
+        setFormErrors(nextErrors)
+        if (Object.keys(nextErrors).length > 0) return
+
+        setCreateLoading(true)
+        try {
+            const res = await api.post("/users", {
+                name: trimmedName,
+                salary: Number(salary),
+                companyValuation: Number(companyValuation)
+            })
+            if (res.status >= 200 && res.status < 300) {
+                setCreateSuccess("Usuário criado")
+                setName("")
+                setSalary("")
+                setCompanyValuation("")
+                setShowCreateModal(false)
+                setAlertMessage("Cadastro de cliente foi um sucesso")
+                if (alertTimeoutRef.current) {
+                    window.clearTimeout(alertTimeoutRef.current)
+                }
+                alertTimeoutRef.current = window.setTimeout(() => {
+                    setAlertMessage(null)
+                }, 3000)
+            } else {
+                setCreateError("Erro ao tentar criar cliente")
+            }
+        } catch {
+            setCreateError("Erro ao tentar criar cliente")
+        } finally {
+            setCreateLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        let mounted = true
+        const fetchClients = async () => {
+            setLoading(true)
+            setError(null)
+            try {
+                const res = await api.get<ApiResponse>("/users", {
+                    params: { page: currentPage, limit: pageSize, perPage: pageSize, pageSize: pageSize }
+                })
+                const data = res.data ?? { clients: [], totalPages: 1, currentPage: 1 }
+                if (!mounted) return
+                setClients(Array.isArray(data.clients) ? data.clients.slice(0, pageSize) : [])
+                setTotalPages(Number(data.totalPages) || 1)
+                setCurrentPage(Number(data.currentPage) || currentPage)
+            } catch {
+                if (!mounted) return
+                setError("Falha ao carregar clientes.")
+            } finally {
+                if (mounted) setLoading(false)
+            }
+        }
+        fetchClients()
+        return () => {
+            mounted = false
+        }
+    }, [currentPage, pageSize])
+
+    useEffect(() => {
+        return () => {
+            if (alertTimeoutRef.current) {
+                window.clearTimeout(alertTimeoutRef.current)
+            }
+        }
+    }, [])
+
+    const handleUpdateClient = async () => {
+        if (!selectedClientToEdit) return
+        setCreateSuccess(null)
+        setCreateError(null)
+
+        const nextErrors: { name?: string; salary?: string; companyValuation?: string } = {}
+
+        const trimmedName = name.trim()
+        if (!trimmedName) {
+            nextErrors.name = "Nome é obrigatório."
+        } else if (trimmedName.length <= 3) {
+            nextErrors.name = "Nome deve ter mais de 3 letras."
+        } else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(trimmedName)) {
+            nextErrors.name = "Nome deve conter apenas letras."
+        }
+
+        if (salary === "" || isNaN(Number(salary))) {
+            nextErrors.salary = "Salário é obrigatório."
+        } else if (Number(salary) <= 0) {
+            nextErrors.salary = "Salário deve ser maior que 0."
+        }
+
+        if (companyValuation === "" || isNaN(Number(companyValuation))) {
+            nextErrors.companyValuation = "Valor da empresa é obrigatório."
+        } else if (Number(companyValuation) <= 0) {
+            nextErrors.companyValuation = "Valor da empresa deve ser maior que 0."
+        }
+
+        setFormErrors(nextErrors)
+        if (Object.keys(nextErrors).length > 0) return
+
+        setCreateLoading(true)
+        try {
+            const res = await api.patch(`/users/${selectedClientToEdit.id}`, {
+                name: trimmedName,
+                salary: Number(salary),
+                companyValuation: Number(companyValuation)
+            })
+            if (res.status >= 200 && res.status < 300) {
+                setCreateSuccess("Cliente atualizado")
+                setClients((prev) =>
+                    prev.map((c) =>
+                        c.id === selectedClientToEdit.id
+                            ? { ...c, name: trimmedName, salary: Number(salary), companyValuation: Number(companyValuation) }
+                            : c
+                    )
+                )
+                setShowCreateModal(false)
+                setSelectedClientToEdit(null)
+                setName("")
+                setSalary("")
+                setCompanyValuation("")
+                setAlertMessage("Cliente atualizado com sucesso")
+                if (alertTimeoutRef.current) {
+                    window.clearTimeout(alertTimeoutRef.current)
+                }
+                alertTimeoutRef.current = window.setTimeout(() => {
+                    setAlertMessage(null)
+                }, 3000)
+            } else {
+                setCreateError("Erro ao tentar atualizar cliente")
+            }
+        } catch {
+            setCreateError("Erro ao tentar atualizar cliente")
+        } finally {
+            setCreateLoading(false)
+        }
+    }
+
+
+    const handleDeleteClient = async () => {
+        if (!selectedClientToDelete) return
+        setDeleteLoading(true)
+        try {
+            const res = await api.delete(`/users/${selectedClientToDelete.id}`)
+            if (res.status >= 200 && res.status < 300) {
+                setClients((prev) => prev.filter((c) => c.id !== selectedClientToDelete.id))
+                setShowDeleteModal(false)
+                setSelectedClientToDelete(null)
+
+                setAlertMessage("Cliente deletado com sucesso")
+                if (alertTimeoutRef.current) {
+                    window.clearTimeout(alertTimeoutRef.current)
+                }
+                alertTimeoutRef.current = window.setTimeout(() => {
+                    setAlertMessage(null)
+                }, 3000)
+            }
+        } catch {
+            setAlertMessage("Erro ao deletar cliente")
+        } finally {
+            setDeleteLoading(false)
+        }
+    }
 
     useEffect(() => {
         let mounted = true
@@ -45,6 +253,11 @@ export default function Home() {
     return (
         <>
             <Header />
+            {alertMessage && (
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white rounded-md px-4 py-2 shadow">
+                    {alertMessage}
+                </div>
+            )}
             <main className="min-h-screen bg-[#F5F5F5] pt-24 pb-10">
                 <div className="max-w-[1280px] w-full mx-auto px-4">
                     <div className="flex justify-between items-center">
@@ -77,16 +290,87 @@ export default function Home() {
                         <>
                             <div className="grid grid-cols-4 gap-4">
                                 {clients.map((client) => (
-                                    <ClientCard key={client.id} client={client} />
+                                    <ClientCard
+                                        key={client.id}
+                                        client={client}
+                                        onDeleteClick={(c) => {
+                                            setSelectedClientToDelete(c)
+                                            setShowDeleteModal(true)
+                                        }}
+                                        onEditClick={(c) => {
+                                            setSelectedClientToEdit(c)
+                                            setName(c.name)
+                                            setSalary(c.salary)
+                                            setCompanyValuation(c.companyValuation)
+                                            setFormErrors({})
+                                            setCreateError(null)
+                                            setCreateSuccess(null)
+                                            setShowCreateModal(true)
+                                        }}
+                                    />
                                 ))}
                             </div>
 
                             <button
                                 type="button"
                                 className="w-full mt-4 border-2 border-[#ec6724] bg-transparent rounded-md py-2 cursor-pointer active:translate-y-[1px] focus:outline-none"
+                                onClick={() => {
+                                    setShowCreateModal(true)
+                                    setCreateSuccess(null)
+                                    setCreateError(null)
+                                    setFormErrors({})
+                                }}
                             >
                                 <strong className="text-[#ec6724] font-medium">Criar cliente</strong>
                             </button>
+
+                            {showCreateModal && (
+                                <ModalClientAdd
+                                    isOpen={showCreateModal}
+                                    onClose={() => {
+                                        setShowCreateModal(false)
+                                        setFormErrors({})
+                                        setCreateError(null)
+                                        setCreateSuccess(null)
+                                        setSelectedClientToEdit(null)
+                                    }}
+                                    name={name}
+                                    salary={salary}
+                                    companyValuation={companyValuation}
+                                    formErrors={formErrors}
+                                    createError={createError}
+                                    createSuccess={createSuccess}
+                                    createLoading={createLoading}
+                                    onChangeName={(val) => {
+                                        setName(val)
+                                        if (formErrors.name) setFormErrors({ ...formErrors, name: undefined })
+                                    }}
+                                    onChangeSalary={(val) => {
+                                        setSalary(val)
+                                        if (formErrors.salary) setFormErrors({ ...formErrors, salary: undefined })
+                                    }}
+                                    onChangeCompanyValuation={(val) => {
+                                        setCompanyValuation(val)
+                                        if (formErrors.companyValuation) setFormErrors({ ...formErrors, companyValuation: undefined })
+                                    }}
+                                    onCreate={handleCreateClient}
+                                    isEditing={selectedClientToEdit !== null}
+                                    onUpdate={handleUpdateClient}
+                                />
+                            )}
+
+                            {showDeleteModal && selectedClientToDelete && (
+                                <ModalClientDelete
+                                    isOpen={showDeleteModal}
+                                    onClose={() => {
+                                        setShowDeleteModal(false)
+                                        setSelectedClientToDelete(null)
+                                    }}
+                                    clientName={selectedClientToDelete.name}
+                                    deleteLoading={deleteLoading}
+                                    onDelete={handleDeleteClient}
+                                />
+                            )}
 
                             <Pagination
                                 totalPages={totalPages}
